@@ -122,7 +122,7 @@ const tweetFromTerms = (res = null) => {
                 .then((resp) => {
                   console.log(resp);
                   if (res) {
-                    res.send(resp);
+                    res?.send(resp);
                   }
                   addRetweetToDb(currentTweet);
                   addHashtagToDb(currentHashtag);
