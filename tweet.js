@@ -66,7 +66,7 @@ const retweetLatestFromUser = (user, response = null) => {
                 .retweet(adminUser.data.id, currentTweet.id)
                 .then((res) => {
                   console.log(res);
-                  if (response) {
+                  if (response && response.send) {
                     response.send(res);
                   }
                   addRetweetToDb(currentTweet);
@@ -121,8 +121,8 @@ const tweetFromTerms = (res = null) => {
                 .retweet(adminUser.data.id, currentTweet.id)
                 .then((resp) => {
                   console.log(resp);
-                  if (res) {
-                    res?.send(resp);
+                  if (res && res.send) {
+                    res.send(resp);
                   }
                   addRetweetToDb(currentTweet);
                   addHashtagToDb(currentHashtag);
@@ -198,7 +198,7 @@ const tweetSmart = (res = null) => {
   console.log("--------------------------------------------------");
 
   const checkDbConnectionJob = setInterval(() => {
-    if (getDb) {
+    if (getDb()) {
       getTweetType().then((tweetType) => {
         console.log("TWEEET TYPE --");
         console.log(tweetType);
@@ -217,9 +217,9 @@ const tweetSmart = (res = null) => {
 
 const runReTweetJob = () => {
   // Runs Smart Re-Tweet Job Every 30 minutes
-  cron.schedule("0 */30 * * * *", tweetSmart);
+  cron.schedule("*/30 * * * *", tweetSmart);
 };
 
-// runReTweetJob();
+runReTweetJob();
 
 module.exports = tweetSmart;
