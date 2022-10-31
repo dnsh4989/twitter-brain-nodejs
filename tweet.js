@@ -220,6 +220,6 @@ const runReTweetJob = () => {
   cron.schedule("0 */30 * * * *", tweetSmart);
 };
 
-runReTweetJob();
+// runReTweetJob();
 
 module.exports = tweetSmart;
