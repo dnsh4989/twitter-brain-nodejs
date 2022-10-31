@@ -216,7 +216,7 @@ const tweetSmart = (res = null) => {
 };
 
 const runReTweetJob = () => {
-  // Every 30 minutes
+  // Runs Smart Re-Tweet Job Every 30 minutes
   cron.schedule("0 */30 * * * *", tweetSmart);
 };
 
