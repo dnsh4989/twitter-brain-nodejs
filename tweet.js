@@ -136,7 +136,7 @@ const tweetFromTerms = (res = null) => {
         } else {
           console.log("KKKKKKKKKKKKK");
           PreviousHashtag.removeAllPreviousHashtags().then(() => {
-            tweetSmart();
+            tweetSmart(res);
           });
         }
       });
@@ -167,7 +167,7 @@ const tweetFromUserProfiles = (res = null) => {
         } else {
           console.log("DDDDDDDDDDD");
           PreviousProfile.removeAllPreviousProfiles().then(() => {
-            tweetSmart();
+            tweetSmart(res);
           });
         }
       });
