@@ -1,5 +1,4 @@
 const client = require("./config/client");
-const cron = require("node-cron");
 const { getDb } = require("./util/database");
 const Profile = require("./models/profile");
 const Retweet = require("./models/retweet");
