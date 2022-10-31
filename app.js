@@ -26,7 +26,7 @@ mongoConnect(() => {
 
 const runReTweetJob = () => {
   // Every 30 minutes
-  cron.schedule("*/3 * * * *", tweetSmart);
+  cron.schedule("*/30 * * * *", tweetSmart);
 };
 
 runReTweetJob();
