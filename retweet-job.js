@@ -9,13 +9,13 @@ const runReTweetJob = () => {
     tweetSmart,
     null,
     true,
-    "America/New_York"
+    "Asia/Kolkata"
   );
   GlobalReTweetJob.start();
 };
 
 const getNextSchedule = () => {
-  return GlobalReTweetJob.nextDate();
+  return GlobalReTweetJob ? GlobalReTweetJob.nextDate() : null;
 };
 
 exports.getNextSchedule = getNextSchedule;

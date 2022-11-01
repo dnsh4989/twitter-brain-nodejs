@@ -7,6 +7,24 @@ const PreviousHashtag = require("./models/previousHashtag");
 const Hashtag = require("./models/hashtag");
 const Config = require("./models/config");
 
+const GlobalConfig = {
+  tweetTypePattern: [
+    "user",
+    "hashtag",
+    "user",
+    "hashtag",
+    "user",
+    "hashtag",
+    "user",
+    "hashtag",
+    "user",
+    "hashtag",
+    "user",
+    "hashtag",
+  ],
+  currentIndex: 0,
+};
+
 const searchTweetsByTerm = (query = "100DaysOfCode", max_results = 10) => {
   const result = client.v2.get("tweets/search/recent", {
     query: query,
@@ -46,43 +64,24 @@ const addUserToDb = (user) => {
 };
 
 const retweetLatestFromUser = (user, response = null) => {
-  const db = getDb();
-  console.log(111);
   console.log(user);
   getTweetsByUser(user)
     .then((last5Tweets) => {
       const currentTweet = last5Tweets.data.data[0];
-      db.collection("retweets")
-        .find({ id: currentTweet.id }, { _id: 1 })
-        .toArray()
-        .then((pastTweets) => {
-          if (!pastTweets.length) {
-            console.log("TYPE --- NOOO CHANGE");
-            currentTweet["userId"] = user.id;
-            console.log(currentTweet);
-            getUserByHandle("dnsh4989").then((adminUser) => {
-              client.v2
-                .retweet(adminUser.data.id, currentTweet.id)
-                .then((res) => {
-                  console.log(res);
-                  if (response && response.send) {
-                    response.send(res);
-                  }
-                  addRetweetToDb(currentTweet);
-                  addUserToDb(user);
-                  incrementTweetTypeIndex();
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            });
-          } else {
-            incrementTweetTypeIndex().then((stat) => {
-              console.log("TYPE --- CHANGEDDDDD");
-              console.log(stat);
-              tweetSmart(response);
-            });
+      currentTweet["userId"] = user.id;
+      client.v2
+        .retweet("598377247", currentTweet.id)
+        .then((res) => {
+          console.log(res);
+          if (response && response.send) {
+            response.send(res);
           }
+          // addRetweetToDb(currentTweet);
+          addUserToDb(user);
+          incrementTweetTypeIndex();
+        })
+        .catch((err) => {
+          console.log(err);
         });
     })
     .catch((err) => {
@@ -109,31 +108,31 @@ const tweetFromTerms = (res = null) => {
           return !hasHash;
         });
         console.log("Filtered Hashes:");
-        console.log(filteredHashes);
         if (filteredHashes.length) {
           const currentHashtag = getRandomItem(filteredHashes);
           searchTweetsByTerm(currentHashtag.term).then((tweets) => {
-            console.log(tweets.data);
+            console.log(
+              "Following 10 Tweets aquared from the Hashtag - " +
+                currentHashtag.term
+            );
             const currentTweet = getRandomItem(tweets.data);
-            getUserByHandle("dnsh4989").then((adminUser) => {
-              client.v2
-                .retweet(adminUser.data.id, currentTweet.id)
-                .then((resp) => {
-                  console.log(resp);
-                  if (res && res.send) {
-                    res.send(resp);
-                  }
-                  addRetweetToDb(currentTweet);
-                  addHashtagToDb(currentHashtag);
-                  incrementTweetTypeIndex();
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            });
+            client.v2
+              .retweet("598377247", currentTweet.id)
+              .then((resp) => {
+                console.log(resp);
+                if (res && res.send) {
+                  res.send(resp);
+                }
+                // addRetweetToDb(currentTweet);
+                addHashtagToDb(currentHashtag);
+                incrementTweetTypeIndex();
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           });
         } else {
-          console.log("KKKKKKKKKKKKK");
+          console.log("Dropping PreviousHashtags Collection");
           PreviousHashtag.removeAllPreviousHashtags().then(() => {
             tweetSmart(res);
           });
@@ -158,13 +157,11 @@ const tweetFromUserProfiles = (res = null) => {
           });
           return !hasUser;
         });
-        console.log("Filtered Users");
-        console.log(filteredUseres);
         if (filteredUseres.length) {
           const currentUser = getRandomItem(filteredUseres);
           retweetLatestFromUser(currentUser, (response = res));
         } else {
-          console.log("DDDDDDDDDDD");
+          console.log("Dropping PreviousProfiles Collection");
           PreviousProfile.removeAllPreviousProfiles().then(() => {
             tweetSmart(res);
           });
@@ -176,18 +173,14 @@ const tweetFromUserProfiles = (res = null) => {
     });
 };
 
-const incrementTweetTypeIndex = async () => {
-  let tweetTypePattern = await Config.getTweetTypePattern();
-  let currentIndex = await Config.getCurrentIndex();
-  currentIndex = currentIndex === 7 ? 0 : currentIndex + 1;
-  const NewConfig = new Config(tweetTypePattern, currentIndex);
-  console.log(NewConfig);
-  return NewConfig.saveIndex();
+const incrementTweetTypeIndex = () => {
+  GlobalConfig.currentIndex =
+    GlobalConfig.currentIndex === 11 ? 0 : GlobalConfig.currentIndex + 1;
 };
 
-const getTweetType = async () => {
-  const tweetTypePattern = await Config.getTweetTypePattern();
-  const currentIndex = await Config.getCurrentIndex();
+const getTweetType = () => {
+  const tweetTypePattern = GlobalConfig.tweetTypePattern;
+  const currentIndex = GlobalConfig.currentIndex;
   return tweetTypePattern[currentIndex];
 };
 
@@ -198,18 +191,17 @@ const tweetSmart = (res = null) => {
 
   const checkDbConnectionJob = setInterval(() => {
     if (getDb()) {
-      getTweetType().then((tweetType) => {
-        console.log("TWEEET TYPE --");
-        console.log(tweetType);
-        if (tweetType === "user") {
-          console.log("TYPE ---> user");
-          tweetFromUserProfiles(res);
-        } else if (tweetType === "hashtag") {
-          console.log("TYPE ---> hashtag");
-          tweetFromTerms(res);
-        }
-      });
       clearInterval(checkDbConnectionJob);
+      const tweetType = getTweetType();
+      console.log("TWEEET TYPE --");
+      console.log(tweetType);
+      if (tweetType === "user") {
+        console.log("TYPE ---> user");
+        tweetFromUserProfiles(res);
+      } else if (tweetType === "hashtag") {
+        console.log("TYPE ---> hashtag");
+        tweetFromTerms(res);
+      }
     }
   }, 500);
 };
