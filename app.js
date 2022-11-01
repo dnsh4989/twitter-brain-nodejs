@@ -1,12 +1,11 @@
-const cron = require("node-cron");
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoConnect = require("./util/database").mongoConnect;
 const profileRoutes = require("./routes/profile");
 const retweetRoutes = require("./routes/retweet");
-const tweetSmart = require("./tweet");
 const cors = require("cors");
+const { runReTweetJob } = require("./retweet-job");
 
 const app = express();
 
@@ -23,15 +22,6 @@ mongoConnect(() => {
     console.log("App running on port 9000");
   });
 });
-
-const runReTweetJob = () => {
-  // Every 27 minutes
-  const reTweetJob = cron.schedule("*/27 * * * *", tweetSmart, {
-    scheduled: true,
-    timezone: "Asia/Kolkata",
-  });
-  reTweetJob.start();
-};
 
 // tweetSmart();
 runReTweetJob();
