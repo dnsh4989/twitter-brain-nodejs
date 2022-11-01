@@ -179,7 +179,7 @@ const tweetFromUserProfiles = (res = null) => {
 const incrementTweetTypeIndex = async () => {
   let tweetTypePattern = await Config.getTweetTypePattern();
   let currentIndex = await Config.getCurrentIndex();
-  currentIndex = currentIndex === 23 ? 0 : currentIndex + 1;
+  currentIndex = currentIndex === 7 ? 0 : currentIndex + 1;
   const NewConfig = new Config(tweetTypePattern, currentIndex);
   console.log(NewConfig);
   return NewConfig.saveIndex();
