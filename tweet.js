@@ -176,10 +176,6 @@ const getTweetType = async () => {
 };
 
 const tweetSmart = (res = null) => {
-  console.log("--------------------------------------------------");
-  console.log("Tweet Task - Time: " + new Date());
-  console.log("--------------------------------------------------");
-
   const checkDbConnectionJob = setInterval(() => {
     if (getDb()) {
       clearInterval(checkDbConnectionJob);

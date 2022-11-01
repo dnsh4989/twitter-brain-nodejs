@@ -5,7 +5,7 @@ const mongoConnect = require("./util/database").mongoConnect;
 const profileRoutes = require("./routes/profile");
 const retweetRoutes = require("./routes/retweet");
 const cors = require("cors");
-const { runReTweetJob } = require("./retweet-job");
+const { runReTweetJob, loopFunc } = require("./retweet-job");
 const tweetSmart = require("./tweet");
 
 const app = express();
@@ -24,5 +24,5 @@ mongoConnect(() => {
   });
 });
 
-// tweetSmart();
+// loopFunc();
 runReTweetJob();
