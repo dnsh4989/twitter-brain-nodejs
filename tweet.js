@@ -67,7 +67,9 @@ const retweetLatestFromUser = (user, response = null) => {
   console.log(user);
   getTweetsByUser(user)
     .then((last5Tweets) => {
-      const currentTweet = last5Tweets.data.data[0];
+      const currentTweet = getRandomItem(last5Tweets.data.data);
+      console.log("currentTweet");
+      console.log(currentTweet);
       currentTweet["userId"] = user.id;
       client.v2
         .retweet("598377247", currentTweet.id)

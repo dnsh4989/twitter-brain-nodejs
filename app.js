@@ -24,5 +24,5 @@ mongoConnect(() => {
   });
 });
 
-tweetSmart();
-// runReTweetJob();
+// tweetSmart();
+runReTweetJob();
