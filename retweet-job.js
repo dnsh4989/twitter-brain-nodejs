@@ -19,7 +19,7 @@ const loopFunc = () => {
 const runReTweetJob = () => {
   // Every 11 minutes
   GlobalReTweetJob = new CronJob(
-    "*/2 * * * *",
+    "*/21 * * * *",
     tweetSmart,
     null,
     true,
