@@ -5,7 +5,7 @@ let GlobalReTweetJob;
 const runReTweetJob = () => {
   // Every 27 minutes
   GlobalReTweetJob = new CronJob(
-    "*/27 * * * *",
+    "*/11 * * * *",
     tweetSmart,
     null,
     true,
