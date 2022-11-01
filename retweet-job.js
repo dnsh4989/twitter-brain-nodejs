@@ -19,8 +19,8 @@ const loopFunc = () => {
 const runReTweetJob = () => {
   // Every 11 minutes
   GlobalReTweetJob = new CronJob(
-    "*/11 * * * *",
-    loopFunc,
+    "*/2 * * * *",
+    tweetSmart,
     null,
     true,
     "Asia/Kolkata"
