@@ -159,6 +159,7 @@ const tweetFromUserProfiles = (res = null) => {
 
 const incrementTweetTypeIndex = async () => {
   const currentIndex = await Config.getIndex();
+  console.log(currentIndex.currentIndex === 7);
   const newIndex =
     currentIndex.currentIndex === 7 ? 0 : currentIndex.currentIndex + 1;
   const NewConfig = new Config(null, newIndex, "63610f5e1b4c74995baed8b9");

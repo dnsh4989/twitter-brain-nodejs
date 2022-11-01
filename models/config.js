@@ -3,7 +3,8 @@ const getDb = require("../util/database").getDb;
 
 module.exports = class Config {
   constructor(tweetTypePattern, currentIndex, mid = null) {
-    this.currentIndex = currentIndex ? currentIndex : null;
+    this.currentIndex =
+      currentIndex || currentIndex === 0 ? currentIndex : null;
     this.tweetTypePattern = tweetTypePattern ? tweetTypePattern : null;
     this._id = mid ? new mongodb.ObjectId(mid) : null;
   }
