@@ -3,7 +3,7 @@ const tweetSmart = require("./tweet");
 let GlobalReTweetJob;
 
 const runReTweetJob = () => {
-  // Every 27 minutes
+  // Every 11 minutes
   GlobalReTweetJob = new CronJob(
     "*/11 * * * *",
     tweetSmart,
