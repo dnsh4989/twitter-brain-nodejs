@@ -7,24 +7,6 @@ const PreviousHashtag = require("./models/previousHashtag");
 const Hashtag = require("./models/hashtag");
 const Config = require("./models/config");
 
-const GlobalConfig = {
-  tweetTypePattern: [
-    "user",
-    "hashtag",
-    "hashtag",
-    "hashtag",
-    "user",
-    "hashtag",
-    "hashtag",
-    "hashtag",
-    "user",
-    "hashtag",
-    "hashtag",
-    "hashtag",
-  ],
-  currentIndex: 0,
-};
-
 const searchTweetsByTerm = (query = "100DaysOfCode", max_results = 10) => {
   const result = client.v2.get("tweets/search/recent", {
     query: query,
@@ -175,15 +157,22 @@ const tweetFromUserProfiles = (res = null) => {
     });
 };
 
-const incrementTweetTypeIndex = () => {
-  GlobalConfig.currentIndex =
-    GlobalConfig.currentIndex === 11 ? 0 : GlobalConfig.currentIndex + 1;
+const incrementTweetTypeIndex = async () => {
+  const currentIndex = await Config.getIndex();
+  const newIndex =
+    currentIndex.currentIndex === 7 ? 0 : currentIndex.currentIndex + 1;
+  const NewConfig = new Config(null, newIndex, "63610f5e1b4c74995baed8b9");
+  console.log(NewConfig);
+  return NewConfig.saveIndex();
 };
 
-const getTweetType = () => {
-  const tweetTypePattern = GlobalConfig.tweetTypePattern;
-  const currentIndex = GlobalConfig.currentIndex;
-  return tweetTypePattern[currentIndex];
+const getTweetType = async () => {
+  const tweetTypePattern = await Config.getPattern();
+  const currentIndex = await Config.getIndex();
+  console.log("CONFIGGGGG");
+  console.log(tweetTypePattern.tweetTypePattern);
+  console.log(currentIndex.currentIndex);
+  return tweetTypePattern.tweetTypePattern[currentIndex.currentIndex];
 };
 
 const tweetSmart = (res = null) => {
@@ -194,16 +183,17 @@ const tweetSmart = (res = null) => {
   const checkDbConnectionJob = setInterval(() => {
     if (getDb()) {
       clearInterval(checkDbConnectionJob);
-      const tweetType = getTweetType();
-      console.log("TWEEET TYPE --");
-      console.log(tweetType);
-      if (tweetType === "user") {
-        console.log("TYPE ---> user");
-        tweetFromUserProfiles(res);
-      } else if (tweetType === "hashtag") {
-        console.log("TYPE ---> hashtag");
-        tweetFromTerms(res);
-      }
+      getTweetType().then((tweetType) => {
+        console.log("TWEEET TYPE --");
+        console.log(tweetType);
+        if (tweetType === "user") {
+          console.log("TYPE ---> user");
+          tweetFromUserProfiles(res);
+        } else if (tweetType === "hashtag") {
+          console.log("TYPE ---> hashtag");
+          tweetFromTerms(res);
+        }
+      });
     }
   }, 500);
 };

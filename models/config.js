@@ -2,13 +2,9 @@ const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 module.exports = class Config {
-  constructor(
-    tweetTypePattern,
-    currentIndex,
-    mid = "635fdf851b4c74995baed7b8"
-  ) {
-    this.currentIndex = currentIndex;
-    this.tweetTypePattern = tweetTypePattern;
+  constructor(tweetTypePattern, currentIndex, mid = null) {
+    this.currentIndex = currentIndex ? currentIndex : null;
+    this.tweetTypePattern = tweetTypePattern ? tweetTypePattern : null;
     this._id = mid ? new mongodb.ObjectId(mid) : null;
   }
 
@@ -17,48 +13,22 @@ module.exports = class Config {
     return db
       .collection("config")
       .updateOne(
-        { _id: new mongodb.ObjectId("635fdf851b4c74995baed7b8") },
+        { _id: new mongodb.ObjectId("63610f5e1b4c74995baed8b9") },
         { $set: this }
-      )
-      .then((res) => {
-        console.log("Config update successfull!!!");
-        // console.log(res);
-      })
-      .catch((error) => {
-        console.log("Config update failed!!!");
-        // console.log(err);
-      });
+      );
   }
 
-  static getTweetTypePattern() {
+  static getIndex() {
     const db = getDb();
     return db
       .collection("config")
-      .find()
-      .toArray()
-      .then((configs) => {
-        console.log("Fetch Config successfull!!!");
-        return configs[0].tweetTypePattern;
-      })
-      .catch((error) => {
-        console.log("Fetch Config failed!!!");
-        console.log(error);
-      });
+      .findOne({ _id: new mongodb.ObjectId("63610f5e1b4c74995baed8b9") });
   }
 
-  static getCurrentIndex() {
+  static getPattern() {
     const db = getDb();
     return db
       .collection("config")
-      .find()
-      .toArray()
-      .then((configs) => {
-        console.log("Fetch Config successfull!!!");
-        return configs[0].currentIndex;
-      })
-      .catch((error) => {
-        console.log("Fetch Config failed!!!");
-        console.log(error);
-      });
+      .findOne({ _id: new mongodb.ObjectId("635fdf851b4c74995baed7b8") });
   }
 };
