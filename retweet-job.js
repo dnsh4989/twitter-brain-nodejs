@@ -9,7 +9,7 @@ const runReTweetJob = () => {
     tweetSmart,
     null,
     true,
-    "Asia/Kolkata"
+    "America/New_York"
   );
   GlobalReTweetJob.start();
 };
