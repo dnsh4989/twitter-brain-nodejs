@@ -78,54 +78,75 @@ const addHashtagToDb = (currentHashtag) => {
   prevHashtag.save();
 };
 
-const tweetFromTerms = (res = null) => {
-  Hashtag.fetchAllHashtags()
-    .then((hashtags) => {
-      PreviousHashtag.fetchAllPreviousHashtags().then((prevHashes) => {
-        const filteredHashes = hashtags.filter((hash) => {
-          let hasHash = false;
-          prevHashes.map((prevhash) => {
-            if (prevhash.term === hash.term) {
-              hasHash = true;
-            }
-          });
-          return !hasHash;
+const tweetFromTerms = (res = null, hash = "100daysofcoding") => {
+  if (hash === "100daysofcoding") {
+    searchTweetsByTerm(currentHashtag.term).then((tweets) => {
+      console.log(
+        "Following 10 Tweets aquared from the Hashtag - " + currentHashtag.term
+      );
+      const currentTweet = getRandomItem(tweets.data);
+      client.v2
+        .retweet("598377247", currentTweet.id)
+        .then((resp) => {
+          console.log(resp);
+          if (res && res.send) {
+            res.send(resp);
+          }
+          incrementTweetTypeIndex();
+        })
+        .catch((err) => {
+          console.log(err);
         });
-        console.log("Filtered Hashes:");
-        if (filteredHashes.length) {
-          const currentHashtag = getRandomItem(filteredHashes);
-          searchTweetsByTerm(currentHashtag.term).then((tweets) => {
-            console.log(
-              "Following 10 Tweets aquared from the Hashtag - " +
-                currentHashtag.term
-            );
-            const currentTweet = getRandomItem(tweets.data);
-            client.v2
-              .retweet("598377247", currentTweet.id)
-              .then((resp) => {
-                console.log(resp);
-                if (res && res.send) {
-                  res.send(resp);
-                }
-                // addRetweetToDb(currentTweet);
-                addHashtagToDb(currentHashtag);
-                incrementTweetTypeIndex();
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          });
-        } else {
-          console.log("Dropping PreviousHashtags Collection");
-          PreviousHashtag.removeAllPreviousHashtags().then(() => {
-            tweetSmart(res);
-          });
-        }
-      });
-    })
-    .catch((err) => {
-      console.log(err);
     });
+  } else {
+    Hashtag.fetchAllHashtags()
+      .then((hashtags) => {
+        PreviousHashtag.fetchAllPreviousHashtags().then((prevHashes) => {
+          const filteredHashes = hashtags.filter((hash) => {
+            let hasHash = false;
+            prevHashes.map((prevhash) => {
+              if (prevhash.term === hash.term) {
+                hasHash = true;
+              }
+            });
+            return !hasHash;
+          });
+          console.log("Filtered Hashes:");
+          if (filteredHashes.length) {
+            const currentHashtag = getRandomItem(filteredHashes);
+            searchTweetsByTerm(currentHashtag.term).then((tweets) => {
+              console.log(
+                "Following 10 Tweets aquared from the Hashtag - " +
+                  currentHashtag.term
+              );
+              const currentTweet = getRandomItem(tweets.data);
+              client.v2
+                .retweet("598377247", currentTweet.id)
+                .then((resp) => {
+                  console.log(resp);
+                  if (res && res.send) {
+                    res.send(resp);
+                  }
+                  // addRetweetToDb(currentTweet);
+                  addHashtagToDb(currentHashtag);
+                  incrementTweetTypeIndex();
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            });
+          } else {
+            console.log("Dropping PreviousHashtags Collection");
+            PreviousHashtag.removeAllPreviousHashtags().then(() => {
+              tweetSmart(res);
+            });
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 };
 
 const tweetFromUserProfiles = (res = null) => {
@@ -188,6 +209,9 @@ const tweetSmart = (res = null) => {
           tweetFromUserProfiles(res);
         } else if (tweetType === "hashtag") {
           console.log("TYPE ---> hashtag");
+          tweetFromTerms(res, null);
+        } else if (tweetType === "100daysofcoding") {
+          console.log("TYPE ---> 100daysofcoding");
           tweetFromTerms(res);
         }
       });
