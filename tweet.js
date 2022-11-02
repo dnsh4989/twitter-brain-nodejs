@@ -80,10 +80,8 @@ const addHashtagToDb = (currentHashtag) => {
 
 const tweetFromTerms = (res = null, hash = "100daysofcoding") => {
   if (hash === "100daysofcoding") {
-    searchTweetsByTerm(currentHashtag.term).then((tweets) => {
-      console.log(
-        "Following 10 Tweets aquared from the Hashtag - " + currentHashtag.term
-      );
+    searchTweetsByTerm(hash).then((tweets) => {
+      console.log("Following 10 Tweets aquared from the Hashtag - " + hash);
       const currentTweet = getRandomItem(tweets.data);
       client.v2
         .retweet("598377247", currentTweet.id)
