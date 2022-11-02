@@ -82,7 +82,7 @@ const tweetFromTerms = (res = null, hash = "100daysofcoding") => {
   if (hash === "100daysofcoding") {
     searchTweetsByTerm(hash).then((tweets) => {
       console.log("Following 10 Tweets aquared from the Hashtag - " + hash);
-      const currentTweet = getRandomItem(tweets.data);
+      const currentTweet = tweets.data[0];
       client.v2
         .retweet("598377247", currentTweet.id)
         .then((resp) => {
@@ -117,7 +117,7 @@ const tweetFromTerms = (res = null, hash = "100daysofcoding") => {
                 "Following 10 Tweets aquared from the Hashtag - " +
                   currentHashtag.term
               );
-              const currentTweet = getRandomItem(tweets.data);
+              const currentTweet = tweets.data[0];
               client.v2
                 .retweet("598377247", currentTweet.id)
                 .then((resp) => {
