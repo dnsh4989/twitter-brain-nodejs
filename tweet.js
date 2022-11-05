@@ -191,7 +191,7 @@ const getTweetType = async () => {
   const currentIndex = await Config.getIndex();
   console.log("CONFIGGGGG");
   console.log(tweetTypePattern.tweetTypePattern);
-  console.log(currentIndex.currentIndex);
+  console.log("Current Index is: " + currentIndex.currentIndex);
   return tweetTypePattern.tweetTypePattern[currentIndex.currentIndex];
 };
 
